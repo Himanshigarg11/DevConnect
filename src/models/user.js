@@ -1,5 +1,8 @@
 const mongoose=require("mongoose")
 const validator=require("validator")
+const jwt=require("jsonwebtoken")
+const bcrypt=require("bcrypt")
+
 const userSchema=new mongoose.Schema({
     firstName:{
         type:String,
@@ -23,14 +26,6 @@ const userSchema=new mongoose.Schema({
         validate(value){
             if(!validator.isEmail(value)){
                 throw new Error("emailId is not correct"+value)
-            }
-        }
-    },
-    phoneNumber:{
-        type:String,
-        validate(value){
-            if(!validator.isMobilePhone(value,"en-IN")){
-                throw new Error("phone number is not valid")
             }
         }
     },
@@ -70,7 +65,7 @@ const userSchema=new mongoose.Schema({
     about:{
         type:String,
         default:"this is a default about of the user!",
-        maxLength:300
+        maxLength:250
     },
     skills:{
         type:[String],
@@ -87,5 +82,19 @@ const userSchema=new mongoose.Schema({
     timestamps:true,
 })
 
+
+userSchema.methods.getJWT=async function(){
+    const user=this;
+    const token=await jwt.sign({userId:user._id},"devTinder@123$123",
+                {expiresIn:"7d"});
+    return token; 
+}
+
+userSchema.methods.validatePassword=async function(passwordInputByUser){
+    const user=this;
+    const actualPassword=user.password
+    const isPasswordValid=await bcrypt.compare(passwordInputByUser,actualPassword)
+    return isPasswordValid;
+}
 const User=mongoose.model("User",userSchema)
 module.exports={User}
