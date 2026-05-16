@@ -6,7 +6,7 @@ const {User}=require("../models/user");
 const { connection } = require("mongoose");
 
 
-const SAFE_USER_DATA="firstName lastName age gender about skills photoUrl"
+const SAFE_USER_DATA="firstName lastName age gender about skills photoURL emailID"
 
 // /get all the pending connection request for logged in user
 
@@ -44,7 +44,6 @@ userRouter.get("/user/connections",userAuth,async (req,res)=>{
         if(!connectionRequest){
         throw new Error("make connections first")
        }
-       console.log(connectionRequest)
       const data=connectionRequest.map((row)=>{
         if(row.fromUserId._id.equals(loggedInUser._id)){
             return row.toUserId
@@ -94,6 +93,7 @@ userRouter.get("/feed",userAuth,async (req,res)=>{
         ]
        
       }).select(SAFE_USER_DATA).skip(skip).limit(limit)
+
        res.send(users)
     }
     catch(err){ 

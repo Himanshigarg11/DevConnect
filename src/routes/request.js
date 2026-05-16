@@ -9,16 +9,14 @@ requestRouter.post("/request/send/:status/:touserId",userAuth,async (req,res)=>{
       const fromUserId=req.user._id
       const toUserId=req.params.touserId
       const status=req.params.status
-       
+      
       const allowedStatus=["interested","ignored"]
       if(!allowedStatus.includes(status)){
        return res.status(400).json({message:"invalid status type: "+status})
       }
-        const connectionRequest = new ConnectionRequest({
-        fromUserId,
-        toUserId,
-        status
-      });
+      if(fromUserId.toString() === toUserId){
+      throw new Error("You cannot send request to yourself");
+}
        const existingConnectionRequest=await ConnectionRequest.findOne({
                   $or:[
                       {fromUserId,toUserId},
@@ -30,6 +28,15 @@ requestRouter.post("/request/send/:status/:touserId",userAuth,async (req,res)=>{
                 }
       
       const toUser=await User.findById(toUserId)
+      if (!toUser) {
+      throw new Error("User not found");
+    }
+
+    const connectionRequest = new ConnectionRequest({
+      fromUserId,
+      toUserId,
+      status
+    });
       await connectionRequest.save();
       res.json({
         message:req.user.firstName+" is "+status+" in "+toUser.firstName,

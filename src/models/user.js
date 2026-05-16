@@ -6,15 +6,16 @@ const bcrypt=require("bcrypt")
 const userSchema=new mongoose.Schema({
     firstName:{
         type:String,
-        required:true,
-        minLength:3,
-        maxLength:20,
+        required:[true,"First name is required"],
+        minLength:[3,"First name must be at least 3 characters"],
+        maxLength:[20,"First name cannot exceed 20 characters"],
         trim: true
     },
     lastName:{
         type:String,
-        minLength:3,
-        maxLength:20,
+        required:[true,"Last name is required"],
+        minLength:[3,"Last name is required"],
+        maxLength:[20,"Last name must be at least 3 characters"],
         trim: true
     },
     emailID:{
@@ -41,8 +42,8 @@ const userSchema=new mongoose.Schema({
     },
     age:{
         type:Number,
-        min:18,
-        max:90
+        min:[18,"Age must be at least 18"],
+        max:[90,"Age cannot exceed 90"]
     },
     gender:{
        type:String,
