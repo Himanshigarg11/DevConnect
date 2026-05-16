@@ -10,7 +10,7 @@ const userAuth= async(req,res,next)=>{
       return res.status(401).send("you are not loggedIn!!")
    }
    //validate the token
-   const decodedMessage=jwt.verify(token,"devTinder@123$123")
+   const decodedMessage=jwt.verify(token,process.env.JWT_SECRET)
    const {userId}=decodedMessage;
    
    //find the user
