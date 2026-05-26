@@ -58,7 +58,7 @@ console.log(
   "SECRET:",
   process.env.RAZORPAY_WEBHOOK_SECRET
 );
-        const isWebhookValid=validateWebhookSignature(req.body.toString(),
+        const isWebhookValid=validateWebhookSignature(JSON.stringify(req.body),
                          webhookSignature,
                          process.env.RAZORPAY_WEBHOOK_SECRET)
 
@@ -69,9 +69,9 @@ console.log(
               if(!isWebhookValid){
                 return res.status(400).json({msg:"webhook signature is invalid"})
               }
-              const body = JSON.parse(req.body.toString());
+              // const body = JSON.parse(req.body.toString());
                 console.log("Parsed Body:", body);
-              const paymentDetails=body.payload.payment.entity;
+              const paymentDetails=req.body.payload.payment.entity;
               const payment=await Payment.findOne({orderId:paymentDetails.order_id})
                 console.log("Payment Found:", payment);
               if(!payment){
