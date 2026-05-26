@@ -9,6 +9,7 @@ app.use(cors({
     "https://dev-connect-frontend-brown.vercel.app"],
     credentials: true,
 }))
+
 app.use(cookieParser())
 app.use(express.json())
 
