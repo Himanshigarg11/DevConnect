@@ -49,15 +49,15 @@ paymentRouter.post("/payment/create",userAuth,async (req,res)=>{
 paymentRouter.post("/payment/webhook",async(req,res)=>{
   try{
         const webhookSignature=req.get("x-razorpay-signature")
-        const isWebhookValid=validateWebhookSignature(JSON.stringify(req.body),
+        const isWebhookValid=validateWebhookSignature(req.body.toString(),
                          webhookSignature,
                          process.env.RAZORPAY_WEBHOOK_SECRET)
 
               if(!isWebhookValid){
                 return res.status(400).json({msg:"webhook signature is invalid"})
               }
-
-              const paymentDetails=req.body.payload.payment.entity;
+              const body = JSON.parse(req.body.toString());
+              const paymentDetails=body.payload.payment.entity;
               const payment=await Payment.findOne({orderId:paymentDetails.order_id})
               if(!payment){
                return res.status(404).json({msg:"Payment not found"})
