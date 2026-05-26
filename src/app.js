@@ -9,10 +9,10 @@ app.use(cors({
     "https://dev-connect-frontend-brown.vercel.app"],
     credentials: true,
 }))
-// app.use(
-//    "/payment/webhook",
-//    express.raw({ type: "application/json" })
-// );
+app.use(
+   "/payment/webhook",
+   express.raw({ type: "application/json" })
+);
 app.use(cookieParser())
 app.use(express.json());
 
