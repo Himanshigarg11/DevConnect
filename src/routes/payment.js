@@ -3,7 +3,7 @@ const paymentRouter = express.Router();
 const { userAuth } = require("../middelware/auth");
 const RazorPayInstance = require("../utils/razorPay");
 const Payment = require("../models/payment");
-const User = require("../models/user");
+const {User} = require("../models/user");
 const { membershipAmount } = require("../utils/constants");
 const {
   validateWebhookSignature,
@@ -76,7 +76,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     payment.status = paymentDetails.status;
     await payment.save();
     console.log("Payment Updated");
-    
+
     const user = await User.findOne({ _id: payment.userId });
     console.log("User Found:", user);
     user.isPremium = true;
