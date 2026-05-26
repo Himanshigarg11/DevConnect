@@ -48,7 +48,7 @@ paymentRouter.post("/payment/create",userAuth,async (req,res)=>{
 
 paymentRouter.post("/payment/webhook",async(req,res)=>{
   try{
-        const webhookSignature=req.headers["X-Razorpay-Signature"];
+        const webhookSignature=req.headers["x-razorpay-signature"]
         const isWebhookValid=validateWebhookSignature(JSON.stringify(req.body),
                          webhookSignature,
                          process.env.RAZORPAY_WEBHOOK_SECRET)
@@ -59,10 +59,13 @@ paymentRouter.post("/payment/webhook",async(req,res)=>{
 
               const paymentDetails=req.body.payload.payment.entity;
               const payment=await Payment.findOne({orderId:paymentDetails.order_id})
-              paument.status=paymentDetails.status
+              if(!payment){
+               return res.status(404).json({msg:"Payment not found"})
+}
+              payment.status = paymentDetails.status
               await payment.save()
 
-              const user=await user.findOne({_id:payment.userId})
+              const user=await User.findOne({_id:payment.userId})
               user.isPremium=true;
               user.membershipType=payment.notes.membershipType
               await user.save()
