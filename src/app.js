@@ -11,6 +11,8 @@ app.use(cors({
 }))
 
 app.use(cookieParser())
+ const body =
+         JSON.parse(req.body.toString());
 app.use(express.json())
 
 const {authRouter}=require("./routes/auth")
