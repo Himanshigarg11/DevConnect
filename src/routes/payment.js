@@ -1,10 +1,12 @@
 const express = require("express");
 const paymentRouter = express.Router();
+
 const { userAuth } = require("../middelware/auth");
 const RazorPayInstance = require("../utils/razorPay");
 const Payment = require("../models/payment");
-const {User} = require("../models/user");
+const { User } = require("../models/user");
 const { membershipAmount } = require("../utils/constants");
+
 const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils");
@@ -61,16 +63,15 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
       return res.status(400).json({ msg: "webhook signature is invalid" });
     }
     const body = JSON.parse(req.body.toString());
- 
+
     const paymentDetails = body.payload.payment.entity;
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
-  
+
     if (!payment) {
       return res.status(404).json({ msg: "Payment not found" });
     }
     payment.status = paymentDetails.status;
     await payment.save();
-    
 
     const user = await User.findOne({ _id: payment.userId });
 
@@ -85,19 +86,23 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
   }
 });
 
-paymentRouter.get("/premium/verify",userAuth,async (req,res)=>{
-  try{
-    const user=req.user;
-    if(user.isPremium){
-      return res.json({isPremium:true})
+paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.isPremium) {
+      return res.json({
+        isPremium: true,
+        membershipType: user.membershipType,
+      });
+    } else {
+      return res.json({
+        isPremium: false,
+        membershipType: "none",
+      });
     }
-    else{
-      return res.json({isPremium:false})
-    }
-  }
-   catch (err) {
+  } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }
-})
+});
 
 module.exports = { paymentRouter };
