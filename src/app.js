@@ -11,11 +11,6 @@ app.use(cors({
 }))
 
 app.use(cookieParser())
-app.use(
-   "/payment/webhook",
-   express.raw({ type: "application/json" })
-);
-
 app.use(express.json());
 
 const {authRouter}=require("./routes/auth")
