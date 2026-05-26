@@ -54,6 +54,10 @@ paymentRouter.post("/payment/webhook",async(req,res)=>{
  console.log("Raw Body:",
          req.body.toString()
       );
+console.log(
+  "SECRET:",
+  process.env.RAZORPAY_WEBHOOK_SECRET
+);
         const isWebhookValid=validateWebhookSignature(req.body.toString(),
                          webhookSignature,
                          process.env.RAZORPAY_WEBHOOK_SECRET)
